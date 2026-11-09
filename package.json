@@ -1,25 +1,24 @@
 {
-  "name": "unbla",
+  "name": "unblind",
   "version": "1.0.0",
   "description": "Ultra-lightweight antidote & AST preprocessor against BLA (Blind LLM Agents) context poisoners",
   "type": "module",
-  "main": "unbla.mjs",
+  "main": "unblind.mjs",
   "bin": {
-    "unbla": "./unbla.mjs",
-    "unblind": "./unbla.mjs"
+    "unblind": "./unblind.mjs",
+    "unbla": "./unbla.mjs"
   },
   "scripts": {
-    "start": "node unbla.mjs",
+    "start": "node unblind.mjs",
     "test": "node test.mjs"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/yoshikobaru/unbla.git"
+    "url": "https://github.com/yoshikobaru/unblind.git"
   },
   "keywords": [
-    "unbla",
-    "bla",
     "unblind",
+    "bla",
     "deobfuscator",
     "ast",
     "ai-agent",

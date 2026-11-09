@@ -1,6 +1,7 @@
-import { cleanCode, scanTarget, cleanTarget } from "./unbla.mjs";
-import { mkdirSync, writeFileSync, rmSync, existsSync } from "node:fs";
+import { cleanCode, scanTarget, cleanTarget } from "./unblind.mjs";
+import { mkdirSync, writeFileSync, readFileSync, rmSync, existsSync } from "node:fs";
 import { join } from "node:path";
+import { execSync } from "node:child_process";
 
 let passed = 0;
 let failed = 0;
@@ -123,6 +124,68 @@ assert(!existsSync(join(testDir, ".bla-manifest.json")), "Clean removes .bla-man
 
 // Clean up sandbox
 rmSync(testDir, { recursive: true, force: true });
+
+// --- TEST 7: Production minified IIFE bundle defended with BLA bankrupt ---
+const iifeTestDir = join(process.cwd(), ".test-tmp-iife-sandbox");
+if (existsSync(iifeTestDir)) rmSync(iifeTestDir, { recursive: true, force: true });
+mkdirSync(iifeTestDir, { recursive: true });
+
+const bundleCode = '(()=>{const e=document.getElementById("app");console.log("run",e)})();';
+writeFileSync(join(iifeTestDir, "bundle.js"), bundleCode);
+
+// Run bla defend --intensity bankrupt
+try {
+  execSync("bla defend bundle.js --intensity bankrupt", {
+    cwd: iifeTestDir,
+    encoding: "utf8",
+    stdio: "pipe"
+  });
+} catch (err) {
+  try {
+    execSync("node C:/PROJECTS/bla-test-tmp/dist/cli.js defend bundle.js --intensity bankrupt", {
+      cwd: iifeTestDir,
+      encoding: "utf8",
+      stdio: "pipe"
+    });
+  } catch (fallbackErr) {
+    console.error("Failed to run bla defend:", fallbackErr.message);
+  }
+}
+
+const shieldedFile = join(iifeTestDir, "bundle.shielded.js");
+const finalShieldedFile = existsSync(shieldedFile)
+  ? shieldedFile
+  : (existsSync(join(iifeTestDir, "dist/bundle.js")) ? join(iifeTestDir, "dist/bundle.js") : join(iifeTestDir, "bundle.js"));
+
+const shieldedSource = readFileSync(finalShieldedFile, "utf8");
+const clean7 = cleanCode(shieldedSource);
+
+// 1. Cleans >99% of bankrupt BLA chaff
+const percentRemoved = ((shieldedSource.length - clean7.code.length) / shieldedSource.length) * 100;
+assert(percentRemoved >= 99, `Purges 99%+ of BLA chaff (removed ${percentRemoved.toFixed(2)}%, from ${shieldedSource.length} to ${clean7.code.length} bytes)`);
+
+// 2. Preserves customer code and behavior
+assert(clean7.code.includes('document.getElementById("app")'), "Preserves DOM lookup root inside IIFE bundle");
+assert(clean7.code.includes('console.log("run"'), "Preserves console.log side effect inside IIFE bundle");
+
+// 3. Removes known BLA patterns
+assert(!clean7.code.includes("stepShadowHeap"), "Purges shadowHeap stepper calls from IIFE body");
+assert(!clean7.code.includes("scc_"), "Purges Tarjan SCC cycle labyrinth nodes");
+assert(!clean7.code.includes("tokenSink"), "Purges token amplifier structures");
+assert(!clean7.code.includes("evidenceLedger"), "Purges architecture mirage evidence ledger");
+assert(!clean7.code.includes("grpcServiceMirage"), "Purges gRPC mirage procedures");
+assert(!clean7.code.includes("_resolveEnclaveBinding"), "Purges enclave binding tarpit functions");
+
+// 4. Preserves runnable IIFE execution
+let iifeExecuted = false;
+let loggedArg = null;
+const mockDoc = { getElementById: (id) => ({ id, nodeType: 1 }) };
+const mockConsole = { log: (msg, arg) => { iifeExecuted = true; loggedArg = arg; } };
+const iifeRunner = new Function("document", "console", clean7.code);
+iifeRunner(mockDoc, mockConsole);
+assert(iifeExecuted && loggedArg && loggedArg.id === "app", "Cleaned IIFE bundle remains fully functional and executes correctly");
+
+rmSync(iifeTestDir, { recursive: true, force: true });
 
 console.log(`\n========================================`);
 console.log(`Results: ${passed} passed, ${failed} failed`);
