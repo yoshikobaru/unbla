@@ -1,0 +1,39 @@
+{
+  "name": "unbla",
+  "version": "1.0.0",
+  "description": "Ultra-lightweight antidote & AST preprocessor against BLA (Blind LLM Agents) context poisoners",
+  "type": "module",
+  "main": "unbla.mjs",
+  "bin": {
+    "unbla": "./unbla.mjs",
+    "unblind": "./unbla.mjs"
+  },
+  "scripts": {
+    "start": "node unbla.mjs",
+    "test": "node test.mjs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yoshikobaru/unbla.git"
+  },
+  "keywords": [
+    "unbla",
+    "bla",
+    "unblind",
+    "deobfuscator",
+    "ast",
+    "ai-agent",
+    "antidote",
+    "dead-code-elimination",
+    "constant-folding",
+    "prompt-injection-defense"
+  ],
+  "author": "yoshikobaru",
+  "license": "MIT",
+  "dependencies": {
+    "@babel/generator": "^7.26.5",
+    "@babel/parser": "^7.26.7",
+    "@babel/traverse": "^7.26.7",
+    "@babel/types": "^7.26.7"
+  }
+}
